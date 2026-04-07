@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Editor - Monaco</title>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toolbar {
+            background: #252526;
+            padding: 10px 20px;
+            border-bottom: 1px solid #3e3e42;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .toolbar button {
+            background: #0e639c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .toolbar button:hover {
+            background: #1177bb;
+        }
+
+        .file-explorer {
+            background: #252526;
+            width: 250px;
+            border-right: 1px solid #3e3e42;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .file-item {
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 2px 0;
+        }
+
+        .file-item:hover {
+            background: #2a2d2e;
+        }
+
+        .file-item.active {
+            background: #094771;
+        }
+
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .editor-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #editor {
+            flex: 1;
+        }
+
+        .logs-panel {
+            height: 200px;
+            background: #1e1e1e;
+            border-top: 1px solid #3e3e42;
+            overflow-y: auto;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            color: #4ec9b0;
+            margin: 2px 0;
+        }
+
+        .status-bar {
+            background: #007acc;
+            padding: 5px 20px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toolbar">
+        <button onclick="saveFile()">💾 Save</button>
+        <button onclick="runCode()">▶️ Run</button>
+        <button onclick="deploy()">🚀 Deploy</button>
+        <button onclick="formatCode()">✨ Format</button>
+        <span style="flex:1"></span>
+        <span id="status">Ready</span>
+    </div>
+
+    <div class="main-container">
+        <div class="file-explorer" id="fileExplorer"></div>
+        <div class="editor-container">
+            <div id="editor"></div>
+            <div class="logs-panel" id="logsPanel"></div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <span>AI Developer System</span>
+        <span id="cursorPos">Ln 1, Col 1</span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
+    <script>
+        let editor = null;
+        let currentFile = null;
+        let files = {};
+
+        // Initialize Monaco Editor
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            editor = monaco.editor.create(document.getElementById('editor'), {
+                value: '// Welcome to AI Developer System\n// Start coding or let AI generate code for you\n\nconsole.log("Hello World!");',
+                language: 'javascript',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontSize: 14,
+                minimap: { enabled: true }
+            });
+
+            // Cursor position tracking
+            editor.onDidChangeCursorPosition((e) => {
+                document.getElementById('cursorPos').innerText = `Ln ${e.position.lineNumber}, Col ${e.position.column}`;
+            });
+        });
+
+        async function saveFile() {
+            if (!currentFile) return;
+            const content = editor.getValue();
+            files[currentFile] = content;
+            addLog(`Saved ${currentFile}`);
+            document.getElementById('status').innerText = 'Saved';
+            setTimeout(() => document.getElementById('status').innerText = 'Ready', 2000);
+        }
+
+        async function runCode() {
+            addLog('▶️ Validating syntax...');
+            const code = editor.getValue();
+
+            try {
+                // Syntax check only without executing arbitrary code
+                new Function(code);
+                addLog(`✅ Syntax is valid`);
+            } catch (error) {
+                addLog(`❌ Syntax Error: ${error.message}`);
+            }
+        }
+
+        async function deploy() {
+            addLog('🚀 Deploying to production...');
+            document.getElementById('status').innerText = 'Deploying...';
+
+            // Call backend API
+            const response = await fetch('/api/deploy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ files: files, main_file: currentFile })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                addLog(`✅ Deployed successfully! URL: ${result.url}`);
+            } else {
+                addLog(`❌ Deployment failed: ${result.error}`);
+            }
+
+            document.getElementById('status').innerText = 'Ready';
+        }
+
+        function formatCode() {
+            addLog('✨ Formatting code...');
+            editor.getAction('editor.action.formatDocument').run().then(() => {
+                addLog('✅ Code formatted');
+            });
+        }
+
+        function addLog(message) {
+            const logsPanel = document.getElementById('logsPanel');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            logEntry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logsPanel.appendChild(logEntry);
+            logEntry.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Load initial file explorer
+        async function loadFiles() {
+            const response = await fetch('/api/files');
+            const data = await response.json();
+            files = data.files;
+
+            const explorer = document.getElementById('fileExplorer');
+            explorer.innerHTML = '';
+
+            for (const [filename, content] of Object.entries(files)) {
+                const fileDiv = document.createElement('div');
+                fileDiv.className = 'file-item';
+                fileDiv.textContent = `📄 ${filename}`;
+                fileDiv.onclick = (e) => openFile(filename, e);
+                explorer.appendChild(fileDiv);
+            }
+        }
+
+        function openFile(filename, event) {
+            currentFile = filename;
+            editor.setValue(files[filename] || '');
+
+            // Update active state
+            document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+        }
+
+        // Load files on startup
+        loadFiles();
+    </script>
+</body>
+
+</html>

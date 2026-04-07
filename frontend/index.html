@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>God-Level AI Developer System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 God-Level AI Developer System</h1>
+            <p>Idea → Code → Test → Deploy in Minutes</p>
+        </header>
+        
+        <div class="input-section">
+            <textarea id="prompt" placeholder="Describe your application idea...&#10;&#10;Example: 'Build a task management app with user authentication and real-time updates'"></textarea>
+            <button id="buildBtn" onclick="startBuild()">🚀 Build Application</button>
+        </div>
+        
+        <div class="projects-section">
+            <h2>Active Projects</h2>
+            <div id="projectsList"></div>
+        </div>
+        
+        <div id="logsPanel" class="logs-panel" style="display:none;">
+            <h2>Live Build Logs</h2>
+            <div id="logs"></div>
+        </div>
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="/editor" style="color: white; text-decoration: underline; font-weight: bold; font-size: 1.1em;">💻 Open Advanced Editor</a>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+    <script src="voice-control.js"></script>
+</body>
+</html>
