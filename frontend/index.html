@@ -15,7 +15,32 @@
         
         <div class="input-section">
             <textarea id="prompt" placeholder="Describe your application idea...&#10;&#10;Example: 'Build a task management app with user authentication and real-time updates'"></textarea>
-            <button id="buildBtn" onclick="startBuild()">🚀 Build Application</button>
+            <div class="button-group">
+                <button id="buildBtn" onclick="startBuild()">🚀 Build Application</button>
+                <button id="trainBtn" class="secondary-button" onclick="toggleTraining()">🧠 Training & Memory</button>
+            </div>
+        </div>
+        
+        <div id="trainingSection" class="training-section" style="display:none;">
+            <h2>🧠 Master Agent Training</h2>
+            <p>Paste logs or share a link from Cursor/GPT to train your Master Agent.</p>
+            
+            <div class="tab-group" style="margin-bottom: 15px;">
+                <button class="tab-btn active" onclick="setTrainingMode('text')">📝 Paste Logs</button>
+                <button class="tab-btn" onclick="setTrainingMode('url')">🔗 Share Link</button>
+            </div>
+
+            <div id="textMode">
+                <textarea id="chatLogs" placeholder="Paste your chat history here..."></textarea>
+            </div>
+            <div id="urlMode" style="display:none;">
+                <input type="text" id="chatUrl" placeholder="https://chatgpt.com/share/..." style="width:100%; padding:15px; border-radius:10px; border:2px solid #e0e0e0; margin-bottom:15px;">
+            </div>
+
+            <button id="startTrainingBtn" onclick="trainMasterAgent()">🔥 Extract Knowledge & Train</button>
+            <div id="trainingStats" class="training-stats" style="display:none;">
+                <span>✅ Extracted <strong id="patternCount">0</strong> new patterns</span>
+            </div>
         </div>
         
         <div class="projects-section">

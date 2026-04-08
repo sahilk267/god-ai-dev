@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from backend.orchestrator import orchestrator
+from backend.agents.master import master_agent
+from backend.services.scraper_service import scraper_service
 from backend.core.logger import get_logger
 import json
 from pathlib import Path
@@ -34,12 +36,28 @@ logger = get_logger(__name__)
 class TaskRequest(BaseModel):
     prompt: str
 
+class LearnRequest(BaseModel):
+    logs: str = None
+    url: str = None
+
 
 @app.post("/api/build")
 async def build_project(request: TaskRequest, api_key: str = Depends(get_api_key)):
     from backend.queue.task_queue import task_queue
     project_id = await task_queue.add_task(request.prompt)
     return {"project_id": project_id, "status": "queued"}
+
+@app.post("/api/learn")
+async def learn_from_logs(request: LearnRequest, api_key: str = Depends(get_api_key)):
+    content = request.logs
+    if request.url:
+        logger.info(f"Importing knowledge from URL: {request.url}")
+        content = await scraper_service.extract_text_from_url(request.url)
+        if not content:
+            raise HTTPException(status_code=400, detail="Failed to extract content from URL")
+            
+    num_patterns = await master_agent.extract_knowledge_from_logs(content)
+    return {"success": True, "patterns_extracted": num_patterns}
 
 @app.get("/api/status/{project_id}")
 async def get_status(project_id: str):

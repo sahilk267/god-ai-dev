@@ -7,12 +7,14 @@ Transform any idea into production-ready code in minutes using AI agents.
 ### ✨ Features
 
 - **One Prompt → Full SaaS** - Describe your app, get complete code
-- **Multi-Agent Architecture** - Planner, Architect, Coder, Tester, DevOps
-- **Auto Test Generation** - Unit tests written automatically
+- **Master Agent Training** - Learns from your patterns and previous builds
+- **URL-Based Memory** - Import knowledge directly from ChatGPT/Cursor share links
+- **Reflection Loop** - Self-auditing code before testing
+- **Project-Wide Debugging** - Complex traces across multiple files automatically
 - **Self-Healing** - Detects and fixes errors automatically
 - **Docker Deployment** - One-click container deployment
 - **GitHub Integration** - Auto push to GitHub
-- **Voice Control** - Build apps with voice commands
+- **Voice Control** - Build apps with voice commands (Hindi/English)
 - **Real-time Logs** - WebSocket streaming of build process
 - **Monaco Editor** - VS Code-like editing experience
 

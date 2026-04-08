@@ -1,5 +1,6 @@
 let currentProjectId = null;
 let ws = null;
+let currentTrainingMode = 'text';
 
 async function startBuild() {
     const prompt = document.getElementById('prompt').value;
@@ -14,7 +15,10 @@ async function startBuild() {
     try {
         const response = await fetch('/api/build', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-API-Key': 'god_mode_secret_key'
+            },
             body: JSON.stringify({ prompt: prompt })
         });
 
@@ -172,6 +176,74 @@ function viewProject(projectId) {
                 status.logs.forEach(log => addLog(log));
             }
         });
+}
+
+function toggleTraining() {
+    const section = document.getElementById('trainingSection');
+    section.style.display = section.style.display === 'none' ? 'block' : 'none';
+}
+
+function setTrainingMode(mode) {
+    currentTrainingMode = mode;
+    document.getElementById('textMode').style.display = mode === 'text' ? 'block' : 'none';
+    document.getElementById('urlMode').style.display = mode === 'url' ? 'block' : 'none';
+    
+    // Toggle active tab class
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.toLowerCase().includes(mode)) btn.classList.add('active');
+    });
+}
+
+async function trainMasterAgent() {
+    let payload = {};
+    if (currentTrainingMode === 'text') {
+        const logs = document.getElementById('chatLogs').value;
+        if (!logs.trim()) {
+            showToast('Please paste some chat logs!', 'error');
+            return;
+        }
+        payload.logs = logs;
+    } else {
+        const url = document.getElementById('chatUrl').value;
+        if (!url.trim()) {
+            showToast('Please provide a chat link!', 'error');
+            return;
+        }
+        payload.url = url;
+    }
+
+    const btn = document.getElementById('startTrainingBtn');
+    btn.disabled = true;
+    btn.textContent = '🧠 Extracting Patterns...';
+
+    try {
+        const response = await fetch('/api/learn', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-API-Key': 'god_mode_secret_key'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            showToast(`Training complete! Extracted ${data.patterns_extracted} patterns.`, 'info');
+            document.getElementById('trainingStats').style.display = 'block';
+            document.getElementById('patternCount').textContent = data.patterns_extracted;
+            if (currentTrainingMode === 'text') document.getElementById('chatLogs').value = '';
+            else document.getElementById('chatUrl').value = '';
+        } else {
+            showToast(data.detail || 'Training failed', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Failed to train', 'error');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '🔥 Extract Knowledge & Train';
+    }
 }
 
 // Auto-refresh projects every 5 seconds

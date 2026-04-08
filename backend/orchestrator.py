@@ -7,6 +7,7 @@ from backend.agents.devops import devops_agent
 from backend.core.test_runner import test_runner
 from backend.core.logger import get_logger
 from backend.core.file_manager import file_manager
+from backend.agents.master import master_agent
 import asyncio
 
 logger = get_logger(__name__)
@@ -23,9 +24,14 @@ class Orchestrator:
         self.active_projects[project_id] = {"status": "started", "logs": []}
         
         try:
+            # Step 0: Consult Master Agent for advice
+            await self._log(project_id, "🧠 Consulting project memory...")
+            advice = await master_agent.get_advice(task)
+            full_task = f"{task}\n\n{advice}" if advice else task
+            
             # Step 1: Planning
             await self._log(project_id, "📋 Planning project...")
-            steps = await plan(task)
+            steps = await plan(full_task)
             
             # Step 2: Architecture
             await self._log(project_id, "🏗️ Designing architecture...")
@@ -33,7 +39,22 @@ class Orchestrator:
             
             # Step 3: Coding
             await self._log(project_id, "💻 Generating code...")
-            code_result = await build_code(architecture)
+            code_result = await build_code(architecture, advice)
+            
+            # Step 3.5: Reflection Loop (Review & Refine)
+            await self._log(project_id, "🔍 Proactive code review...")
+            from backend.agents.reviewer import review_code
+            main_file = "app.py" if "app.py" in code_result["files"] else list(code_result["files"].keys())[0]
+            review = await review_code(code_result["files"][main_file])
+            
+            if int(review.get("score", 0)) < 7:
+                await self._log(project_id, f"🔄 Refining code (Score: {review.get('score')}/10)...")
+                refined_code = await build_code({
+                    "project_name": code_result["project_name"],
+                    "folder_structure": {main_file: f"Refine this code based on review: {review.get('issues')}"}
+                }, advice)
+                code_result["files"][main_file] = refined_code["files"][main_file]
+                file_manager.update_file(code_result["project_name"], main_file, refined_code["files"][main_file])
             
             # Step 4: Testing & Debug Loop
             await self._log(project_id, "🧪 Generating and running tests...")
@@ -52,12 +73,15 @@ class Orchestrator:
                 
                 await self._log(project_id, f"⚠️ Tests failed (attempt {attempt + 1}/{max_debug_attempts})")
                 
-                # Get the main code file to fix
-                main_code = code_result["files"].get("app.py", code_result["files"].get("main.py", ""))
-                if main_code:
-                    fixed_code = await fix_errors(main_code, test_result["error"])
-                    file_manager.update_file(code_result["project_name"], "app.py", fixed_code)
-                    code_result["files"]["app.py"] = fixed_code
+                # Get the multi-file fix
+                debug_result = await fix_errors(code_result["files"], test_result["error"])
+                file_to_fix = debug_result.get("file_to_fix")
+                fixed_code = debug_result.get("fixed_code")
+                
+                if file_to_fix in code_result["files"]:
+                    file_manager.update_file(code_result["project_name"], file_to_fix, fixed_code)
+                    code_result["files"][file_to_fix] = fixed_code
+                    await self._log(project_id, f"🔧 Fixed {file_to_fix}: {debug_result.get('explanation')[:100]}...")
             
             # Step 5: Review
             await self._log(project_id, "🔍 Reviewing code quality...")
@@ -85,6 +109,7 @@ class Orchestrator:
             
         except Exception as e:
             logger.error(f"Project {project_id} failed: {e}")
+            await master_agent.learn_from_failure(project_id, self.active_projects[project_id]["logs"], str(e))
             self.active_projects[project_id]["status"] = "failed"
             return {"success": False, "error": str(e), "project_id": project_id}
     

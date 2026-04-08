@@ -21,3 +21,6 @@ gunicorn
 httpx
 PyAudio
 prometheus-fastapi-instrumentator==6.1.0
+chromadb==0.4.15
+sentence-transformers==2.2.2
+trafilatura==1.6.3

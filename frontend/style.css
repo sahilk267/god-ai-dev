@@ -63,6 +63,80 @@ button:hover {
     transform: translateY(-2px);
 }
 
+.button-group {
+    display: flex;
+    gap: 15px;
+}
+
+.secondary-button {
+    background: white;
+    color: #764ba2;
+    border: 2px solid #764ba2;
+}
+
+.secondary-button:hover {
+    background: #f0f0f0;
+}
+
+.training-section {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.training-section h2 {
+    color: #764ba2;
+    margin-bottom: 10px;
+}
+
+.training-section p {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+#chatLogs {
+    background: #fdfdfd;
+    height: 200px;
+}
+
+.training-stats {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e1f5fe;
+    color: #01579b;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.tab-group {
+    display: flex;
+    background: #f0f0f0;
+    padding: 5px;
+    border-radius: 10px;
+    gap: 5px;
+}
+
+.tab-btn {
+    flex: 1;
+    margin-top: 0;
+    padding: 10px;
+    font-size: 14px;
+    background: transparent;
+    color: #666;
+    border-radius: 8px;
+    border: none;
+}
+
+.tab-btn.active {
+    background: white;
+    color: #764ba2;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
 .logs-panel {
     background: #1e1e1e;
     color: #d4d4d4;

@@ -11,6 +11,7 @@ god-ai-dev/
 │   │   ├── 📄 file_manager.py           ✅ File operations
 │   │   ├── 📄 test_runner.py            ✅ Pytest executor
 │   │   ├── 📄 logger.py                 ✅ Loguru logging
+│   │   ├── 📄 experience.py             ✅ Vector Memory (ChromaDB)
 │   │   └── 📄 exceptions.py             ✅ Custom exceptions
 │   │
 │   ├── 📁 agents/                       # AI Agents (7 files)
@@ -18,8 +19,9 @@ god-ai-dev/
 │   │   ├── 📄 planner.py                ✅ Task breakdown
 │   │   ├── 📄 architect.py              ✅ System design
 │   │   ├── 📄 coder.py                  ✅ Code generation
-│   │   ├── 📄 debugger.py               ✅ Error fixing
+│   │   ├── 📄 debugger.py               ✅ Multi-file debugging
 │   │   ├── 📄 tester.py                 ✅ Test generation
+│   │   ├── 📄 master.py                 ✅ Meta-Learning Brain
 │   │   ├── 📄 reviewer.py               ✅ Code review
 │   │   └── 📄 devops.py                 ✅ Deployment
 │   │
@@ -36,7 +38,8 @@ god-ai-dev/
 │   └── 📁 services/                     # External Services (3 files)
 │       ├── 📄 __init__.py               ✅
 │       ├── 📄 github_service.py         ✅ GitHub integration
-│       └── 📄 voice_service.py          ✅ Voice control
+│       ├── 📄 voice_service.py          ✅ Voice control
+│       └── 📄 scraper_service.py        ✅ URL extraction (ChatGPT)
 │
 ├── 📁 frontend/                         # FRONTEND UI (5 files)
 │   ├── 📄 index.html                    ✅ Main UI

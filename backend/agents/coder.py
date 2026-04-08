@@ -5,7 +5,7 @@ import asyncio
 
 logger = get_logger(__name__)
 
-async def build_code(architecture: dict) -> dict:
+async def build_code(architecture: dict, advice: str = "") -> dict:
     files = {}
     
     semaphore = asyncio.Semaphore(5)
@@ -20,6 +20,7 @@ async def build_code(architecture: dict) -> dict:
         Write production-ready code for {file_path}.
         Description: {description}
         Architecture context: {trimmed_architecture}
+        {advice}
         
         Include error handling, logging, and type hints.
         Return ONLY the code without explanations.
