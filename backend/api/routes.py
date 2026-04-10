@@ -110,7 +110,7 @@ async def cancel_project(project_id: str):
         return {"status": "cancelled", "project_id": project_id}
     return {"status": "not_found"}
 
-from fastapi.background import BackgroundTask
+from starlette.background import BackgroundTask
 import shutil
 
 @app.get("/api/projects/{project_id}/download")

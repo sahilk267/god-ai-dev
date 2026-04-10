@@ -54,3 +54,10 @@ graph TD
 3. **Storage**: Patterns are indexed in Experience DB.
 4. **Retrieval**: Orchestrator queries DB for advice before every new task.
 5. **Continuous Learning**: Failed builds are analyzed by the Master Agent to prevent future repeating of mistakes.
+
+## 🧠 Intelligence Stack
+
+The system is optimized for high-performance open-source models:
+- **Primary Model (Planning/Logic)**: `qwen2.5-coder:7b`
+- **Coder Model (Development)**: `deepseek-coder:6.7b`
+- **Maintenance Model (Fixes/Scraping)**: `deepseek-coder:1.3b`

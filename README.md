@@ -32,7 +32,7 @@ make install
 
 # Configure API keys
 cp .env.example .env
-# Edit .env with your Qwen and DeepSeek keys
+# Edit .env with your models (Supporting Qwen2.5-Coder and DeepSeek-Coder variants)
 
 # Run development server
 make dev
