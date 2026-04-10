@@ -23,9 +23,9 @@ services:
     volumes:
       - ./workspace:/app/workspace
       - ./logs:/app/logs
-    # Only watch backend code — ./workspace is mounted here; writes during a build
-    # would otherwise trigger --reload and kill WebSockets (browser sees code 1005 loops).
-    command: uvicorn backend.api.routes:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/backend
+    # No --reload: image COPYs backend (no bind mount), and watchfiles would still
+    # restart on __pycache__ etc., dropping WebSockets with code 1012 (service restart).
+    command: uvicorn backend.api.routes:app --host 0.0.0.0 --port 8000
 
   frontend:
     image: nginx:alpine

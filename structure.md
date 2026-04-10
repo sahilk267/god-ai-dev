@@ -1,83 +1,89 @@
+# Repository structure
+
+```
 god-ai-dev/
 │
-├── 📁 backend/                          # BACKEND CORE (23 files)
-│   ├── 📄 __init__.py                   ✅ Package initializer
-│   ├── 📄 orchestrator.py               ✅ Master controller
+├── 📁 backend/
+│   ├── 📄 __init__.py
+│   ├── 📄 orchestrator.py              # Pipeline controller
 │   │
-│   ├── 📁 core/                         # Core modules (7 files)
-│   │   ├── 📄 __init__.py               ✅
-│   │   ├── 📄 router.py                 ✅ API router (Qwen/DeepSeek)
-│   │   ├── 📄 config.py                 ✅ Configuration manager
-│   │   ├── 📄 file_manager.py           ✅ File operations
-│   │   ├── 📄 test_runner.py            ✅ Pytest executor
-│   │   ├── 📄 logger.py                 ✅ Loguru logging
-│   │   ├── 📄 experience.py             ✅ Vector Memory (ChromaDB)
-│   │   └── 📄 exceptions.py             ✅ Custom exceptions
+│   ├── 📁 core/
+│   │   ├── 📄 router.py                # LLM (Ollama-compatible)
+│   │   ├── 📄 config.py
+│   │   ├── 📄 file_manager.py
+│   │   ├── 📄 test_runner.py
+│   │   ├── 📄 logger.py
+│   │   ├── 📄 experience.py            # ChromaDB memory
+│   │   └── 📄 exceptions.py
 │   │
-│   ├── 📁 agents/                       # AI Agents (7 files)
-│   │   ├── 📄 __init__.py               ✅
-│   │   ├── 📄 planner.py                ✅ Task breakdown
-│   │   ├── 📄 architect.py              ✅ System design
-│   │   ├── 📄 coder.py                  ✅ Code generation
-│   │   ├── 📄 debugger.py               ✅ Multi-file debugging
-│   │   ├── 📄 tester.py                 ✅ Test generation
-│   │   ├── 📄 master.py                 ✅ Meta-Learning Brain
-│   │   ├── 📄 reviewer.py               ✅ Code review
-│   │   └── 📄 devops.py                 ✅ Deployment
+│   ├── 📁 agents/
+│   │   ├── 📄 planner.py
+│   │   ├── 📄 architect.py
+│   │   ├── 📄 coder.py
+│   │   ├── 📄 debugger.py
+│   │   ├── 📄 tester.py
+│   │   ├── 📄 master.py
+│   │   ├── 📄 reviewer.py
+│   │   └── 📄 devops.py
 │   │
-│   ├── 📁 api/                          # API Layer (3 files)
-│   │   ├── 📄 __init__.py               ✅
-│   │   ├── 📄 routes.py                 ✅ FastAPI endpoints
-│   │   └── 📄 websocket.py              ✅ WebSocket manager
+│   ├── 📁 api/
+│   │   ├── 📄 routes.py
+│   │   └── 📄 websocket.py
 │   │
-│   ├── 📁 queue/                        # Task Queue (3 files)
-│   │   ├── 📄 __init__.py               ✅
-│   │   ├── 📄 task_queue.py             ✅ Queue management
-│   │   └── 📄 worker.py                 ✅ Background workers
+│   ├── 📁 queue/
+│   │   ├── 📄 task_queue.py
+│   │   └── 📄 worker.py
 │   │
-│   └── 📁 services/                     # External Services (3 files)
-│       ├── 📄 __init__.py               ✅
-│       ├── 📄 github_service.py         ✅ GitHub integration
-│       ├── 📄 voice_service.py          ✅ Voice control
-│       └── 📄 scraper_service.py        ✅ URL extraction (ChatGPT)
+│   └── 📁 services/
+│       ├── 📄 github_service.py
+│       ├── 📄 voice_service.py
+│       └── 📄 scraper_service.py
 │
-├── 📁 frontend/                         # FRONTEND UI (5 files)
-│   ├── 📄 index.html                    ✅ Main UI
-│   ├── 📄 style.css                     ✅ Styling
-│   ├── 📄 app.js                        ✅ Main logic
-│   ├── 📄 monaco-editor.html            ✅ VS Code editor
-│   └── 📄 voice-control.js              ✅ Voice module
+├── 📁 frontend/
+│   ├── 📄 index.html
+│   ├── 📄 style.css
+│   ├── 📄 app.js
+│   ├── 📄 monaco-editor.html
+│   └── 📄 voice-control.js
 │
-├── 📁 tests/                            # TESTING (3 files)
-│   ├── 📄 __init__.py                   ✅
-│   ├── 📄 test_orchestrator.py          ✅ Orchestrator tests
-│   └── 📄 test_agents.py                ✅ Agent tests
+├── 📁 test/
+│   ├── 📄 test_orchestrator.py
+│   └── 📄 test_agents.py
 │
-├── 📁 scripts/                          # SCRIPTS (2 files)
-│   ├── 📄 setup.sh                      ✅ Installation
-│   └── 📄 deploy.sh                     ✅ Production deploy
+├── 📁 scripts/
+│   ├── 📄 setup.sh
+│   └── 📄 deploy.sh
 │
-├── 📁 docker/                           # DOCKER CONFIG (3 files)
-│   ├── 📄 Dockerfile.backend            ✅ Backend image
-│   ├── 📄 Dockerfile.frontend           ✅ Frontend image
-│   └── 📄 nginx.conf                    ✅ Reverse proxy
+├── 📁 docker/
+│   ├── 📄 Dockerfile                   # Dev backend image (multi-stage)
+│   ├── 📄 Dockerfile.backend
+│   ├── 📄 Dockerfile.frontend
+│   ├── 📄 nginx.conf                 # Used by prod-style compose
+│   └── 📄 nginx.dev.conf             # Dev: static + proxy /api /ws /editor
 │
-├── 📁 config/                           # CONFIGURATION (2 files)
-│   ├── 📄 production.yaml               ✅ Production settings
-│   └── 📄 development.yaml              ✅ Development settings
+├── 📁 docs/
+│   └── 📄 implementation-plan.md     # Phased checklist (pipeline + IDE)
 │
-├── 📁 workspace/                        # WORKSPACE (auto-generated)
-│   └── 📁 [project_name]/               ✅ Generated projects
+├── 📁 config/
+│   ├── 📄 production.yaml
+│   └── 📄 development.yaml
 │
-├── 📁 deployments/                      # DEPLOYMENTS (auto-generated)
-│   └── 📁 [deployment_id]/              ✅ Deployed artifacts
+├── 📁 workspace/                     # Generated apps + Chroma .memory (gitignored typical)
+├── 📁 logs/
 │
-├── 📁 logs/                             # LOGS (auto-generated)
-│   └── 📄 ai_system.log                 ✅ System logs
+├── 📄 agent diagram.md               # ASCII agents
+├── 📄 api architechture.md           # REST/WS reference
+├── 📄 architechture.md               # Mermaid + doc map
+├── 📄 data flow.md
+├── 📄 db storage architechture.md
+├── 📄 deployment architechture.md
 │
-├── 📄 requirements.txt                  ✅ Python dependencies
-├── 📄 .env.example                      ✅ Environment template
-├── 📄 docker-compose.yml                ✅ Development compose
-├── 📄 docker-compose.prod.yml           ✅ Production compose
-├── 📄 Makefile                          ✅ Build automation
-└── 📄 README.md                         ✅ Documentation
+├── 📄 requirements.txt
+├── 📄 .env.example
+├── 📄 docker-compose.yml             # Dev: redis, backend, frontend
+├── 📄 docker-compose.prod.yml
+├── 📄 Makefile
+└── 📄 README.md
+```
+
+**Canonical details:** avoid duplicating API lists here — use [`api architechture.md`](api%20architechture.md). **Roadmap / checks:** [`docs/implementation-plan.md`](docs/implementation-plan.md).

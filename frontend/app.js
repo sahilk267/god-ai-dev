@@ -78,7 +78,13 @@ function connectWebSocket(projectId) {
         if (gen !== wsGeneration) return;
         ws = null;
         if (currentProjectId !== projectId) return;
-        console.log('WebSocket closed. Reconnecting...', event);
+        const code = event.code;
+        const why =
+            code === 1012 ? 'server restart' :
+            code === 1001 ? 'going away' :
+            code === 1005 ? 'no status' :
+            code ? `code ${code}` : 'closed';
+        console.log(`WebSocket ${why}; reconnecting in ${wsReconnectDelay}ms…`);
         const delay = wsReconnectDelay;
         wsReconnectDelay = Math.min(wsReconnectDelay * 2, 30000);
         setTimeout(() => {

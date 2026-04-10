@@ -61,3 +61,22 @@ The system is optimized for high-performance open-source models:
 - **Primary Model (Planning/Logic)**: `qwen2.5-coder:7b`
 - **Coder Model (Development)**: `deepseek-coder:6.7b`
 - **Maintenance Model (Fixes/Scraping)**: `deepseek-coder:1.3b`
+
+## Project identity and workspace
+
+- **`project_id`**: UUID returned by `POST /api/build` and used for `/api/status/...`, `/ws/...`, and listing in `/api/projects`.
+- **`project_name`**: Directory name under `workspace/` where the coder writes files (from architect output). It is **not** the same as `project_id` until explicitly linked in application state (see [`docs/implementation-plan.md`](docs/implementation-plan.md) Phases 1–2).
+
+## Documentation map (single source per topic)
+
+| Topic | File |
+|--------|------|
+| Agent flow (ASCII) | [`agent diagram.md`](agent%20diagram.md) |
+| HTTP / WebSocket API | [`api architechture.md`](api%20architechture.md) |
+| Request pipeline | [`data flow.md`](data%20flow.md) |
+| Redis, disk, GitHub, memory | [`db storage architechture.md`](db%20storage%20architechture.md) |
+| Dev / prod Docker | [`deployment architechture.md`](deployment%20architechture.md) |
+| Repo tree | [`structure.md`](structure.md) |
+| Pipeline & IDE checklist | [`docs/implementation-plan.md`](docs/implementation-plan.md) |
+
+Avoid duplicating full endpoint lists here; use **api architechture** as the canonical API reference.
