@@ -17,6 +17,8 @@ venv.bak/
 workspace/
 logs/
 .pytest_cache/
+backend/data/memory/   # Actual DB files are ignored
+!backend/data/.gitkeep # Keep the directory structure
 *.zip
 terraform/.terraform/
 terraform/*.tfstate*

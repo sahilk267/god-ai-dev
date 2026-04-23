@@ -1,5 +1,6 @@
 from backend.core.router import router
 from backend.core.logger import get_logger
+from backend.agents.utils import safe_parse_json
 
 logger = get_logger(__name__)
 
@@ -28,17 +29,14 @@ async def fix_errors(files_dict: dict, error_log: str) -> dict:
     }}
     """
     
-    import json
     response = await router.call_coder_llm(prompt, system="You are an expert full-stack debugger")
     
-    try:
-        result = json.loads(response)
-        logger.info(f"Debugger identified fix in: {result.get('file_to_fix')}")
-        return result
-    except (Exception, json.JSONDecodeError):
-        # Fallback: try to fix based on the first file if JSON fails
-        return {
-            "file_to_fix": list(files_dict.keys())[0],
-            "fixed_code": files_dict[list(files_dict.keys())[0]],
-            "explanation": "Debugger fallback"
-        }
+    fallback = {
+        "file_to_fix": list(files_dict.keys())[0],
+        "fixed_code": files_dict[list(files_dict.keys())[0]],
+        "explanation": "Debugger fallback"
+    }
+    
+    result = safe_parse_json(response, fallback=fallback)
+    logger.info(f"Debugger identified fix in: {result.get('file_to_fix')}")
+    return result

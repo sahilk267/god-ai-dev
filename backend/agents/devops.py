@@ -10,7 +10,7 @@ class DevOpsAgent:
     def __init__(self):
         try:
             self.docker_client = docker.from_env()
-        except:
+        except Exception:
             self.docker_client = None
             logger.warning("Docker not available")
     

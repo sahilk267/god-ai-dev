@@ -1,0 +1,8 @@
+node_modules/
+workspace/
+logs/
+__pycache__/
+*.pyc
+.env
+.git/
+backend/data/

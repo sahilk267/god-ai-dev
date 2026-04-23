@@ -2,6 +2,9 @@ let currentProjectId = null;
 let ws = null;
 let currentTrainingMode = 'text';
 
+// Configure this to match your .env API_KEY value
+const API_KEY = 'god_mode_secret_key';
+
 async function startBuild() {
     const prompt = document.getElementById('prompt').value;
     if (!prompt.trim()) {
@@ -17,7 +20,7 @@ async function startBuild() {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'X-API-Key': 'god_mode_secret_key'
+                'X-API-Key': API_KEY
             },
             body: JSON.stringify({ prompt: prompt })
         });
@@ -222,7 +225,7 @@ async function trainMasterAgent() {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'X-API-Key': 'god_mode_secret_key'
+                'X-API-Key': API_KEY
             },
             body: JSON.stringify(payload)
         });

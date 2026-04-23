@@ -1,6 +1,7 @@
 from backend.core.router import router
 from backend.core.experience import experience_service
 from backend.core.logger import get_logger
+from backend.agents.utils import safe_parse_json
 import json
 
 logger = get_logger(__name__)
@@ -23,18 +24,21 @@ class MasterAgent:
         """
         response = await router.call_primary_llm(prompt, system="You are a Meta-Learning Master Agent")
         
-        try:
-            lesson_doc = json.loads(response)
-            await experience_service.add_experience(
-                content=f"LESSON: {lesson_doc['lesson']}\nPATTERN: {lesson_doc['fix_pattern']}",
-                metadata={
-                    "type": "lesson",
-                    "project_id": project_id,
-                    "tags": ",".join(lesson_doc["tags"])
-                }
-            )
-        except Exception as e:
-            logger.error(f"Master Agent failed to learn: {e}")
+        lesson_doc = safe_parse_json(response)
+        if lesson_doc:
+            try:
+                await experience_service.add_experience(
+                    content=f"LESSON: {lesson_doc['lesson']}\nPATTERN: {lesson_doc['fix_pattern']}",
+                    metadata={
+                        "type": "lesson",
+                        "project_id": project_id,
+                        "tags": ",".join(lesson_doc.get("tags", []))
+                    }
+                )
+            except Exception as e:
+                logger.error(f"Master Agent failed to learn: {e}")
+        else:
+            logger.warning("Master Agent could not parse lesson from LLM response")
 
     async def extract_knowledge_from_logs(self, chat_logs: str):
         """Parse external chat logs (Cursor/GPT) into reusable patterns"""
@@ -52,17 +56,20 @@ class MasterAgent:
         """
         response = await router.call_primary_llm(prompt, system="You are a Knowledge Extraction Expert")
         
-        try:
-            patterns = json.loads(response)
-            for p in patterns:
+        patterns = safe_parse_json(response, fallback=[])
+        if not patterns:
+            logger.warning("No patterns extracted from logs")
+            return 0
+            
+        for p in patterns:
+            try:
                 await experience_service.add_experience(
                     content=f"PATTERN: {p['pattern_name']}\nDESC: {p['description']}\nCONTEXT: {p['context']}",
                     metadata={"type": "pattern", "source": "imported_log"}
                 )
-            return len(patterns)
-        except Exception as e:
-            logger.error(f"Failed to extract knowledge: {e}")
-            return 0
+            except Exception as e:
+                logger.error(f"Failed to store pattern: {e}")
+        return len(patterns)
 
     async def get_advice(self, task: str) -> str:
         """Search memory and provide advice for a new task"""

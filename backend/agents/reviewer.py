@@ -1,5 +1,6 @@
 from backend.core.router import router
 from backend.core.logger import get_logger
+from backend.agents.utils import safe_parse_json
 
 logger = get_logger(__name__)
 
@@ -17,17 +18,15 @@ async def review_code(code: str) -> dict:
     }}
     """
     
-    import json
     response = await router.call_primary_llm(prompt, system="You are a senior code reviewer")
     
-    try:
-        review = json.loads(response)
-        logger.info(f"Code review score: {review.get('score')}")
-        return review
-    except (Exception, json.JSONDecodeError):
-        return {
-            "score": 7,
-            "issues": ["Consider adding error handling", "Add type hints"],
-            "suggestions": ["Implement logging", "Add docstrings"],
-            "optimized_code": code
-        }
+    fallback = {
+        "score": 7,
+        "issues": ["Consider adding error handling", "Add type hints"],
+        "suggestions": ["Implement logging", "Add docstrings"],
+        "optimized_code": code
+    }
+    
+    review = safe_parse_json(response, fallback=fallback)
+    logger.info(f"Code review score: {review.get('score')}")
+    return review

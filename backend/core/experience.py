@@ -1,5 +1,4 @@
 import chromadb
-from chromadb.config import Settings
 from pathlib import Path
 from backend.core.logger import get_logger
 from backend.core.config import settings
@@ -8,7 +7,7 @@ logger = get_logger(__name__)
 
 class ExperienceService:
     def __init__(self):
-        self.db_path = Path("workspace/.memory")
+        self.db_path = Path("backend/data/memory")
         self.db_path.mkdir(parents=True, exist_ok=True)
         
         self.client = chromadb.PersistentClient(path=str(self.db_path))

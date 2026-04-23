@@ -1,6 +1,6 @@
 from backend.core.router import router
 from backend.core.logger import get_logger
-import json
+from backend.agents.utils import safe_parse_json
 
 logger = get_logger(__name__)
 
@@ -30,19 +30,17 @@ async def design_system(task: str) -> dict:
     
     response = await router.call_primary_llm(prompt, system="You are a senior system architect")
     
-    try:
-        architecture = json.loads(response)
-        logger.info(f"Designed system: {architecture.get('project_name')}")
-        return architecture
-    except (Exception, json.JSONDecodeError):
-        # Fallback architecture
-        return {
-            "project_name": "ai_generated_app",
-            "folder_structure": {
-                "app.py": "# Main application\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get('/')\ndef root():\n    return {{'message': 'Hello World'}}",
-                "requirements.txt": "fastapi\nuvicorn"
-            },
-            "database": {"type": "sqlite", "tables": ["items"]},
-            "apis": ["/", "/health"],
-            "frontend_framework": "Vanilla JS"
-        }
+    fallback = {
+        "project_name": "ai_generated_app",
+        "folder_structure": {
+            "app.py": "# Main application\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get('/')\ndef root():\n    return {{'message': 'Hello World'}}",
+            "requirements.txt": "fastapi\nuvicorn"
+        },
+        "database": {"type": "sqlite", "tables": ["items"]},
+        "apis": ["/", "/health"],
+        "frontend_framework": "Vanilla JS"
+    }
+    
+    architecture = safe_parse_json(response, fallback=fallback)
+    logger.info(f"Designed system: {architecture.get('project_name')}")
+    return architecture

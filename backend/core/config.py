@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     primary_model: str = "llama3"
     coder_model: str = "deepseek-coder:latest"
     github_token: Optional[str] = None
+    api_key: str = "change_me_in_env"
     redis_url: str = "redis://localhost:6379"
     workspace_dir: Path = Path("./workspace")
     max_retries: int = 3

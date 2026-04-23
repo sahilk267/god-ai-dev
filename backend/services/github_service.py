@@ -4,7 +4,6 @@ import git
 import os
 from pathlib import Path
 from typing import Optional
-import requests
 from backend.core.config import settings
 from backend.core.logger import get_logger
 

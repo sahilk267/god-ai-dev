@@ -11,7 +11,6 @@ help:
 
 install:
 	pip install -r requirements.txt
-	pre-commit install
 
 dev:
 	uvicorn backend.api.routes:app --reload --port 8000
@@ -23,7 +22,7 @@ deploy:
 	bash scripts/deploy.sh
 
 test:
-	pytest tests/ -v --cov=backend
+	pytest test/ -v --cov=backend
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} +

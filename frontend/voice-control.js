@@ -129,11 +129,13 @@ function addVoiceButton() {
             voiceControl.start((command) => {
                 if (command.type === 'build') {
                     document.getElementById('prompt').value = command.prompt;
-                    startBuild();
+                    if (typeof startBuild === 'function') startBuild();
                 } else if (command.type === 'save') {
-                    saveFile();
+                    if (typeof saveFile === 'function') saveFile();
                 } else if (command.type === 'run') {
-                    runCode();
+                    if (typeof runCode === 'function') runCode();
+                } else if (command.type === 'deploy') {
+                    if (typeof deploy === 'function') deploy();
                 }
             });
         }

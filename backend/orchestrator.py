@@ -3,12 +3,14 @@ from backend.agents.architect import design_system
 from backend.agents.coder import build_code
 from backend.agents.tester import generate_tests
 from backend.agents.debugger import fix_errors
+from backend.agents.reviewer import review_code
 from backend.agents.devops import devops_agent
 from backend.core.test_runner import test_runner
 from backend.core.logger import get_logger
 from backend.core.file_manager import file_manager
 from backend.agents.master import master_agent
 import asyncio
+import datetime
 
 logger = get_logger(__name__)
 
@@ -43,7 +45,6 @@ class Orchestrator:
             
             # Step 3.5: Reflection Loop (Review & Refine)
             await self._log(project_id, "🔍 Proactive code review...")
-            from backend.agents.reviewer import review_code
             main_file = "app.py" if "app.py" in code_result["files"] else list(code_result["files"].keys())[0]
             review = await review_code(code_result["files"][main_file])
             
@@ -85,7 +86,6 @@ class Orchestrator:
             
             # Step 5: Review
             await self._log(project_id, "🔍 Reviewing code quality...")
-            from backend.agents.reviewer import review_code
             review = await review_code(list(code_result["files"].values())[0])
             await self._log(project_id, f"📊 Code score: {review.get('score', 'N/A')}/10")
             
@@ -117,7 +117,6 @@ class Orchestrator:
         self.active_projects[project_id]["logs"].append(message)
         logger.info(f"[{project_id[:8]}] {message}")
         from backend.api.websocket import manager
-        import datetime
         await manager.send_to_project(project_id, {
             "type": "log",
             "message": message,

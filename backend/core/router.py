@@ -10,9 +10,11 @@ logger = get_logger(__name__)
 
 class ModelRouter:
     def __init__(self):
+        import httpx
         self.llm_client = AsyncOpenAI(
             api_key="ollama", # dummy key for local API
-            base_url=settings.ollama_base_url
+            base_url=settings.ollama_base_url,
+            http_client=httpx.AsyncClient()
         )
         self._cache = {}
 
