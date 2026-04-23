@@ -12,12 +12,18 @@ services:
       - "8000:8000"
     env_file:
       - .env
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434/v1
+      - ANONYMIZED_TELEMETRY=false
     depends_on:
       - redis
     volumes:
       - ./workspace:/app/workspace
       - ./logs:/app/logs
-    command: uvicorn backend.api.routes:app --host 0.0.0.0 --port 8000 --reload
+    # No --reload: image COPYs backend (no bind mount), and watchfiles would still
+    # restart on __pycache__ etc., dropping WebSockets with code 1012 (service restart).
+    command: uvicorn backend.api.routes:app --host 0.0.0.0 --port 8000
 
   frontend:
     image: nginx:alpine

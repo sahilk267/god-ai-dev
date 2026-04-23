@@ -18,6 +18,13 @@ async def test_learning():
     try:
         from backend.agents.master import master_agent
         from backend.core.experience import experience_service
+        from backend.core.router import router
+        
+        # Mock LLM calls for verification script
+        async def mock_call(*args, **kwargs):
+            return '[{"pattern_name": "FastAPI/Pydantic V2", "description": "Use pydantic-settings", "context": "config"}, {"pattern_name": "Async Postgres", "description": "Use AsyncSession", "context": "db"}]'
+        router.call_primary_llm = mock_call
+        
         print("[SUCCESS] Master Agent and Experience Service loaded successfully")
     except Exception as e:
         print(f"[ERROR] Failed to load agents: {e}")

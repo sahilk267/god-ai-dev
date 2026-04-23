@@ -1,3 +1,5 @@
+# God-Level AI Developer System — pin major stacks together; see README / structure.md
+# Optional runtime: PyAudio (voice), Docker SDK (devops), ChromaDB + sentence-transformers (memory)
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
 openai==1.6.1
@@ -18,9 +20,10 @@ pydantic==2.5.0
 pydantic-settings==2.1.0
 requests
 gunicorn
-httpx
+httpx==0.26.0
 PyAudio
 prometheus-fastapi-instrumentator==6.1.0
 chromadb==0.4.15
+posthog==4.8.0
 sentence-transformers==2.2.2
 trafilatura==1.6.3

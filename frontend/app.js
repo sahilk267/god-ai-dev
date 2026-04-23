@@ -48,31 +48,57 @@ async function startBuild() {
 }
 
 let wsReconnectDelay = 1000;
+let wsGeneration = 0;
 
 function connectWebSocket(projectId) {
-    if (ws) ws.close();
+    wsGeneration += 1;
+    const gen = wsGeneration;
+
+    if (ws) {
+        const old = ws;
+        ws = null;
+        old.onclose = null;
+        old.close();
+    }
 
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    ws = new WebSocket(`${protocol}//${window.location.host}/ws/${projectId}`);
+    const socket = new WebSocket(`${protocol}//${window.location.host}/ws/${projectId}`);
+    ws = socket;
 
-    ws.onmessage = (event) => {
+    socket.onmessage = (event) => {
+        if (gen !== wsGeneration) return;
         const data = JSON.parse(event.data);
         if (data.type === 'log') {
             addLog(data.message);
         }
     };
 
-    ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
+    socket.onerror = (error) => {
+        if (gen === wsGeneration) console.error('WebSocket error:', error);
     };
 
-    ws.onclose = (event) => {
-        console.log('WebSocket closed. Reconnecting...', event);
-        setTimeout(() => connectWebSocket(projectId), wsReconnectDelay);
+    socket.onclose = (event) => {
+        if (gen !== wsGeneration) return;
+        ws = null;
+        if (currentProjectId !== projectId) return;
+        const code = event.code;
+        const why =
+            code === 1012 ? 'server restart' :
+            code === 1001 ? 'going away' :
+            code === 1005 ? 'no status' :
+            code ? `code ${code}` : 'closed';
+        console.log(`WebSocket ${why}; reconnecting in ${wsReconnectDelay}ms…`);
+        const delay = wsReconnectDelay;
         wsReconnectDelay = Math.min(wsReconnectDelay * 2, 30000);
+        setTimeout(() => {
+            if (gen !== wsGeneration) return;
+            if (currentProjectId !== projectId) return;
+            connectWebSocket(projectId);
+        }, delay);
     };
 
-    ws.onopen = () => {
+    socket.onopen = () => {
+        if (gen !== wsGeneration) return;
         wsReconnectDelay = 1000;
     };
 }
@@ -118,6 +144,15 @@ function addLog(message) {
 async function refreshProjects() {
     try {
         const response = await fetch('/api/projects');
+        if (!response.ok) {
+            console.warn('refreshProjects: HTTP', response.status, response.statusText);
+            return;
+        }
+        const ct = response.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) {
+            console.warn('refreshProjects: expected JSON, got', ct);
+            return;
+        }
         const projects = await response.json();
 
         const projectsDiv = document.getElementById('projectsList');

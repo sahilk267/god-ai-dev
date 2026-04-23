@@ -4,8 +4,8 @@ from typing import Optional
 
 class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434/v1"
-    primary_model: str = "llama3"
-    coder_model: str = "deepseek-coder:latest"
+    primary_model: str = "qwen2.5-coder:7b"
+    coder_model: str = "deepseek-coder:6.7b"
     github_token: Optional[str] = None
     api_key: str = "change_me_in_env"
     redis_url: str = "redis://localhost:6379"
